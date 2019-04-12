@@ -2,11 +2,10 @@
 # This file defines the game world representation
 
 class game_world:
-	# World variables
-	board = []
-
 	def __init__(self):
 		# 3 x 5 board
+		self.board = []
+
 		# First row is black
 		self.board.append(['b', 'b', 'b'])
 
@@ -24,7 +23,7 @@ class game_world:
 		x_n = move[2]
 		y_n = move[3]
 		pawn = self.board[x][y]
-		self.board[x][y] = 'w'
+		self.board[x][y] = 'e'
 		self.board[x_n][y_n] = pawn
 
 	def set_world(self, old_world, move):
