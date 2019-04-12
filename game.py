@@ -22,7 +22,7 @@ while(True):
 
 	# Get the next move
 	if turn == computer:
-		move = algo.generate_move(game_world, tracker)
+		move = algo.generate_move(game_world, computer, tracker)
 		turn = user
 	else:
 		move = console.get_move(game_world, tracker)
@@ -32,12 +32,12 @@ while(True):
 	world.update_world(game_world, move)
 
 	# Check for victory
-	victory = algo.check_victory(game_world, tracker)
+	victory = algo.check_victory(game_world)
 	if victory == computer:
 		console.print_victory(computer)
 	elif victory == user:
 		console.print_victory(user)
-	elif victory == "TIE":
+	elif victory == algo.GAME_TIE:
 		console.print_tie()
 
 # Print game Stats

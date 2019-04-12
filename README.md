@@ -1,5 +1,5 @@
 # Pawn Game
 
 ## Authors
-- Carlos Leon (Dubliyu)
-- Mary Wilson (mwilson18)
+- Carlos Leon
+- Mary Wilson

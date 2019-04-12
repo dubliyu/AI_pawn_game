@@ -19,10 +19,29 @@ class game_world:
 		self.board.append(['w', 'w', 'w'])
 
 	def update_world(move):
-		# Not done
-		# Move is array of x, y , new_val tuples
-		for m in move:
-			self.board[m[0]][m[1]] = m[2]
+		x = move[0]
+		y = move[1]
+		x_n = move[2]
+		y_n = move[3]
+		pawn = self.board[x][y]
+		self.board[x][y] = 'w'
+		self.board[x_n][y_n] = pawn
+
+	def set_world(old_world, move):
+		# Set the board
+		for row in range(5):
+			for col in range(3):
+				self.board[row][col] = old_world.board[row][col]
+
+		# Update the world
+		x = move[0]
+		y = move[1]
+		x_n = move[2]
+		y_n = move[3]
+		pawn = self.board[x][y]
+		self.board[x][y] = 'w'
+		self.board[x_n][y_n] = pawn
+
 
 
 
