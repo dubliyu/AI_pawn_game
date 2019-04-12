@@ -9,3 +9,5 @@ class tracker:
 	def __init__(self, computer, user):
 		self.computer = computer
 		self.user = user
+
+	# Put in function to track time, somehow

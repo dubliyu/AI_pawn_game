@@ -19,6 +19,7 @@ class game_world:
 		self.board.append(['w', 'w', 'w'])
 
 	def update_world(move):
+		# Not done
 		# Move is array of x, y , new_val tuples
 		for m in move:
 			self.board[m[0]][m[1]] = m[2]

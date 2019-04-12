@@ -32,7 +32,7 @@ while(True):
 	world.update_world(game_world, move)
 
 	# Check for victory
-	victory = algo.check_victory()
+	victory = algo.check_victory(game_world, tracker)
 	if victory == computer:
 		console.print_victory(computer)
 	elif victory == user:
