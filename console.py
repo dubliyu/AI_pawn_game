@@ -15,7 +15,7 @@ def print_world(world):
 
 			# Add spacing
 			str += " | "
-		str = [:-1]
+		str = str[:-1]
 		print(str)
 		index += 1
 	print("+---------+")
@@ -36,7 +36,7 @@ def get_user():
 	print("The white and black player compete to make their pawns get to other side")
 	print("The White player always goes first")
 	comp_first = 'a'
-	while(comp_first != 'y' || comp_first != 'n'):
+	while(comp_first != 'y' and comp_first != 'n'):
 		comp_first = input("Will the computer go first? (Y/N) >")
 		comp_first = comp_first.lower()
 		if comp_first == 'y':
@@ -55,7 +55,7 @@ def get_move(world, tracker):
 	move = []
 	valid = False
 
-	while(!valid):
+	while(not valid):
 		print("Please enter a move as Column-Row to Column-Row\n ex) A3 B4 or world to print the world again")
 		choice = input(">").lower()
 		if choice == 'world':
@@ -79,11 +79,16 @@ def get_move(world, tracker):
 				if from_col in valid_col and to_col in valid_col and to_row in valid_row and from_row in valid_row:
 					# TODO
 					# perform logic validation here
-					valid = world.validate_move(from_col, from_row, to_col, to_row)
+					#valid = world.validate_move(from_col, from_row, to_col, to_row)
 					# Place into move
+					valid = True
 				else:
 					print("Invalid input")
 		else:
 			print("Invalid input")
+
+	# Return move
+	return [0 , 0 , 1 , 0]
+
 
 

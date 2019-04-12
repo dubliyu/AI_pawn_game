@@ -140,7 +140,7 @@ def minimax(world, depth, player, tracker):
 			new_world.set_world(world, move)
 
 			# Run minimax on new world
-			worth_of_move = minimax(new_world, , depth + 1, opponent, !isMaxPlayer, tracker)
+			worth_of_move = minimax(new_world, depth + 1, opponent, not isMaxPlayer, tracker)
 
 			# Evaluate results
 			if worth_of_move > best_move_worth:
@@ -160,7 +160,7 @@ def minimax(world, depth, player, tracker):
 			new_world.set_world(world, move)
 
 			# Run minimax on new world
-			worth_of_move = minimax(new_world, depth + 1, opponent, !isMaxPlayer, tracker)
+			worth_of_move = minimax(new_world, depth + 1, opponent, not isMaxPlayer, tracker)
 
 			# Evaluate results
 			if worth_of_move < best_move_worth:
@@ -176,16 +176,16 @@ def evaluator_func(world, player):
 
 	# Check white
 	if player == GAME_WHITE:
-		if s_row[0] == GAME_WHITE or s_row[1] == GAME_WHITE s_row[2] == GAME_WHITE:
+		if s_row[0] == GAME_WHITE or s_row[1] == GAME_WHITE or s_row[2] == GAME_WHITE:
 			return _BASE_WIN
-		if t_row[0] == GAME_BLACK or t_row[1] == GAME_BLACK t_row[2] == GAME_BLACK:
+		if t_row[0] == GAME_BLACK or t_row[1] == GAME_BLACK or t_row[2] == GAME_BLACK:
 			return _BASE_LOSS
 
 	# Check black
 	else:
-		if s_row[0] == GAME_WHITE or s_row[1] == GAME_WHITE s_row[2] == GAME_WHITE:
+		if s_row[0] == GAME_WHITE or s_row[1] == GAME_WHITE or s_row[2] == GAME_WHITE:
 			return _BASE_LOSS
-		if t_row[0] == GAME_BLACK or t_row[1] == GAME_BLACK t_row[2] == GAME_BLACK:
+		if t_row[0] == GAME_BLACK or t_row[1] == GAME_BLACK or t_row[2] == GAME_BLACK:
 			return _BASE_WIN
 
 	# Check if deadlock has happened
