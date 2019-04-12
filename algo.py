@@ -1,6 +1,6 @@
 # import libs
 import math
-import world
+import world as world_mod
 
 # Global
 GAME_TIE = "TIE"
@@ -11,7 +11,7 @@ _BASE_WIN = 100
 _BASE_LOSS = -100
 
 
-def generate_move(world, tracker, player):
+def generate_move(world, player, tracker):
 	# Runs minimax and returns optimal move for algo
 	tracker.start_time()
 	
@@ -23,18 +23,18 @@ def generate_move(world, tracker, player):
 	best_move = []
 	for move in moveset:
 		# Create a new world
-		new_world = world.game_world()
+		new_world = world_mod.game_world()
 		new_world.set_world(world, move)
 
 		# Run minimax on new world
 		worth_of_move = minimax(new_world, 0, player, False, tracker)
-
+		print("Found worth: " +  str(worth_of_move))
 		# Evaluate results
 		if worth_of_move > best_move_worth:
 			best_move = move 
 
 	# Stop tracking time
-	tracker.stop()
+	tracker.stop_time()
 
 	# Return best move
 	return best_move
@@ -46,12 +46,12 @@ def get_possible_moves(world, player, tracker):
 	moveset = []
 
 	# Get all foward movement moves
-	for i in range(len(world)):
-		for j in range(len(world[i])):
-			if world[i][j] == player:
+	for i in range(5):
+		for j in range(3):
+			if world.board[i][j] == player:
 				# We found a pawn, can it move?
-				move = move_forward(world, i, j, player)
-				attack = attack_forward(world, i, j, player)
+				move = move_forward(world.board, i, j, player)
+				attack = attack_forward(world.board, i, j, player)
 				if move: moveset.append(move)
 				if attack: moveset.append(attack)
 
@@ -62,15 +62,21 @@ def get_possible_moves(world, player, tracker):
 def move_forward(world, i, j, player):
 	# Check if a piece can move one space forward
 	# black
-	if player == GAME_BLACK and (i + 1 > 4 or world[i][j] != GAME_EMPTY):
-		return False
+	if player == GAME_BLACK:
+		if i + 1 > 4 or world[i +1 ][j] != GAME_EMPTY:
+			return False
+		else:
+			return [i, j, i+1, j]
 	
 	# white
-	if player == GAME_WHITE and (0 > i - 1 or world[i][j] != GAME_EMPTY):
-		return False
+	if player == GAME_WHITE:
+		if 0 > i - 1 or world[i - 1][j] != GAME_EMPTY:
+			return False
+		else:
+			return [i, j, i-1, j]
 
 	# Return move
-	return [i, j, i+1, j]
+	return False
 
 def attack_forward(world, i, j, player):
 	# Check if we can attack a piece
@@ -85,7 +91,7 @@ def attack_forward(world, i, j, player):
 		if 0 > j - 1 and world[i - 1][j - 1] == GAME_BLACK:
 			return [i, j, i-1, j-1]
 		# Right
-		if j + 1 > 2 and world[i - 1][j + 1] == GAME_BLACK:
+		if 2 > j + 1 and world[i - 1][j + 1] == GAME_BLACK:
 			return [i, j, i-1, j+1]
 
 	if player == GAME_BLACK:
@@ -95,22 +101,22 @@ def attack_forward(world, i, j, player):
 
 		# Check two cases
 		# left
-		if 0 > j - 1 and world[i - 1][j - 1] == GAME_WHITE:
+		if 0 > j - 1 and world[i + 1][j - 1] == GAME_WHITE:
 			return [i, j, i+1, j-1]
 		# Right
-		if j + 1 > 2 and world[i - 1][j + 1] == GAME_WHITE:
+		if 2 > j + 1 and world[i + 1][j + 1] == GAME_WHITE:
 			return [i, j, i+1, j+1]			
 
 	# Something happened
 	return False 
 
-def minimax(world, depth, player, tracker):
+def minimax(world, depth, player, isMaxPlayer, tracker):
 	# Run the world to its leafs
 	# Note depth
 	tracker.check_depth(depth)
 
 	# Evaluate world for victory
-	worth = evaluator_func(world, player, isMaxPlayer)
+	worth = evaluator_func(world, player, tracker)
 
 	# Switch on worth
 	if worth == GAME_TIE:
@@ -136,7 +142,7 @@ def minimax(world, depth, player, tracker):
 		best_move_worth = -math.inf
 		for move in our_moves:
 			# Create a new world
-			new_world = world.game_world()
+			new_world = world_mod.game_world()
 			new_world.set_world(world, move)
 
 			# Run minimax on new world
@@ -150,13 +156,13 @@ def minimax(world, depth, player, tracker):
 		return best_move_worth
 	else:
 		# Get opponent moves
-		opp_moves = get_possible_moves(world, opponent)
+		opp_moves = get_possible_moves(world, opponent, tracker)
 
 		# Call minimax for each move
 		best_move_worth = math.inf
 		for move in opp_moves:
 			# Create a new world
-			new_world = world.game_world()
+			new_world = world_mod.game_world()
 			new_world.set_world(world, move)
 
 			# Run minimax on new world
@@ -169,7 +175,7 @@ def minimax(world, depth, player, tracker):
 		# Return the best worth
 		return best_move_worth
 
-def evaluator_func(world, player):
+def evaluator_func(world, player, tracker):
 	# Evaluate whether a victory has been had
 	s_row = world.board[0]
 	t_row = world.board[4]
@@ -189,15 +195,15 @@ def evaluator_func(world, player):
 			return _BASE_WIN
 
 	# Check if deadlock has happened
-	moves = get_possible_moves(world, player)
+	moves = get_possible_moves(world, player, tracker)
 	if len(moves) == 0:
 		return GAME_TIE
 	else:
 		return 0
 
-def check_victory(world):
+def check_victory(world, tracker):
 	# Run the world through the evaluator function
-	worth = evaluator_func(world, GAME_WHITE)
+	worth = evaluator_func(world, GAME_WHITE, tracker)
 	if worth == _BASE_WIN:
 		return GAME_WHITE
 	elif worth == _BASE_LOSS:

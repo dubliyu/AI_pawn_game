@@ -18,7 +18,7 @@ console.print_info()
 # Start the game loop
 while(True):
 	# Show the world
-	console.print_world()
+	console.print_world(game_world)
 
 	# Get the next move
 	if turn == computer:
@@ -29,10 +29,11 @@ while(True):
 		turn = computer
 
 	# Update the world
-	world.update_world(game_world, move)
+	print(move)
+	game_world.update_world(move)
 
 	# Check for victory
-	victory = algo.check_victory(game_world)
+	victory = algo.check_victory(game_world, tracker)
 	if victory == computer:
 		console.print_victory(computer)
 	elif victory == user:

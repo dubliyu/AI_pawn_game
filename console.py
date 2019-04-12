@@ -2,23 +2,24 @@
 # This file contains functions for input/output
 
 def print_world(world):
-	print("  A  B  C  ")
-	print("+---------+")
+	print("   A  B  C  ")
+	print(" +-----------+")
 	index = 1
+	row_s = ""
 	for row in world.board:
-		str = str(index) + "| "
+		row_s = str(index) + "| "
 		for i in row:
 			# Add character
-			if i == 'w': str += ' '
-			if i == 'b': str += '*'
-			if i == 'w': str += 'O'
+			if i == 'e': row_s += ' '
+			if i == 'b': row_s += '*'
+			if i == 'w': row_s += 'O'
 
 			# Add spacing
-			str += " | "
-		str = str[:-1]
-		print(str)
+			row_s += " | "
+		row_s = row_s[:-1]
+		print(row_s)
 		index += 1
-	print("+---------+")
+	print(" +-----------+")
 
 def print_info():
 	print("Hello, when the game is shown on the console please be aware that")

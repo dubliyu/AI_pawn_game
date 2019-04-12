@@ -18,7 +18,7 @@ class game_world:
 		# Next row is white
 		self.board.append(['w', 'w', 'w'])
 
-	def update_world(move):
+	def update_world(self, move):
 		x = move[0]
 		y = move[1]
 		x_n = move[2]
@@ -27,7 +27,7 @@ class game_world:
 		self.board[x][y] = 'w'
 		self.board[x_n][y_n] = pawn
 
-	def set_world(old_world, move):
+	def set_world(self, old_world, move):
 		# Set the board
 		for row in range(5):
 			for col in range(3):
