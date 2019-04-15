@@ -35,12 +35,15 @@ while(stop_loop == False):
 	# Check for victory
 	victory = algo.check_victory(game_world, tracker)
 	if victory == computer:
+		console.print_world(game_world)
 		console.print_victory(computer, False)
 		stop_loop = True
 	elif victory == user:
+		console.print_world(game_world)
 		console.print_victory(user, True)
 		stop_loop = True
 	elif victory == algo.GAME_TIE:
+		console.print_world(game_world)
 		console.print_tie()
 		stop_loop = True
 
