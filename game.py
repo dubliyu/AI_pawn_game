@@ -25,7 +25,7 @@ while(True):
 		move = algo.generate_move(game_world, computer, tracker)
 		turn = user
 	else:
-		move = console.get_move(game_world, tracker)
+		move = console.get_move(game_world, tracker, user)
 		turn = computer
 
 	# Update the world

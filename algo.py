@@ -1,3 +1,5 @@
+#Carlos Leon, Mary Wilson
+#This file defines the algorithm the AI uses to pick its move
 # import libs
 import math
 import world as world_mod

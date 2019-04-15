@@ -51,12 +51,12 @@ def get_user():
 	# Return
 	return computer, user, turn
 
-def get_move(world, tracker):
+def get_move(world, tracker, user):
 	# vars
 	move = []
 	valid = False
 
-	while(not valid):
+	while(valid != 1):
 		print("Please enter a move as Column-Row to Column-Row\n ex) A3 B4 or world to print the world again")
 		choice = input(">").lower()
 		if choice == 'world':
@@ -78,18 +78,85 @@ def get_move(world, tracker):
 
 				# Check for validity
 				if from_col in valid_col and to_col in valid_col and to_row in valid_row and from_row in valid_row:
-					# TODO
-					# perform logic validation here
-					#valid = world.validate_move(from_col, from_row, to_col, to_row)
-					# Place into move
-					valid = True
+					#Validates the input
+					valid = console.validate_move(world, from_col, from_row, to_col, to_row, user)
+					############################## do i need to put console there in same file??? ###########################################
+
+					if valid == -1: #They tried to move other team
+						print("You can't move a pawn you don't control. Try Again.")
+					else if valid == 0: #Not valid
+						print("That move is not valid.")
+						continue
+					else if valid == 1: #Valid!!!
+						return [from_col, from_row, to_col, to_row]
+
+
 				else:
 					print("Invalid input")
 		else:
 			print("Invalid input")
 
-	# Return move
-	return [0 , 0 , 1 , 0]
+	# This should never happen
+	return [0,0,0,0]
 
+#Validates a user input
+def validate_move(world, from_col, from_row, to_col, to_row, user):
+	#If white
+	if (world.board[from_col][from_row] == 'w') and (user == 'w'): 
+		if(to_row = from_row -1): #If going one space foward  - covers non-attack moves
+
+			if (to_col == from_col + 1) or (to_col == from_col -1): #Diagonal
+
+				if world.board[to_col][to_row] == 'b': #Can attack opponent
+					return 1
+				else:
+					return 0
+
+			else if (to_col == from_col):
+				if world.board[to_col][to_row] != 'e':
+					return 1
+				else:
+					return 0
+
+			else: #Moving multiple diagonals - this is not a knight
+				return 0
+			
+		else: #Moving multiple or no rows
+			return 0
+
+	#IF they are black but trying to control white
+	else if (world.board[from_col][from_row] == 'w') and (user == 'b'):
+		return -1
+
+	#If black
+	else if world.board[from_col][from_row] == 'b':
+		if(to_row = from_row +1): #If going one space foward  - covers non-attack moves
+
+			if (to_col == from_col + 1) or (to_col == from_col -1): #Diagonal
+
+				if world.board[to_col][to_row] == 'w': #Can attack opponent
+					return 1
+				else:
+					return 0
+
+			else if (to_col == from_col):
+				if world.board[to_col][to_row] != 'e':
+					return 1
+				else:
+					return 0
+
+			else: #Moving multiple diagonals - this is not a knight
+				return 0
+			
+		else: #Moving multiple or no rows
+			return 0
+
+	#IF they are white but trying to control black
+	else if (world.board[from_col][from_row] == 'b') and (user == 'w'):
+		return -1
+
+	#If they try moving something not there
+	else: #e so invalid 
+		return 0
 
 
