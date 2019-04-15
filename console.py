@@ -101,6 +101,28 @@ def get_move(world, tracker, user):
 
 #Validates a user input
 def validate_move(world, from_col, from_row, to_col, to_row, user):
+#Converting the row / col to grid numbers
+
+	loop = [from_col, from_row, to_col, to_row]
+
+	for i in range (0, len(loop)):
+		if loop[i] == 'a':
+			loop[i] = 0
+		else if loop[i] == 'b':
+			loop[i] = 1
+		else if loop[i] == 'c':
+			loop[i] == 2
+		else if loop[i].isnumeric():
+			loop[i] == loop[i] - 1
+		else:
+	
+	from_col = loop[0]
+	from_row = loop[1]
+	to_col = loop[2]
+	to_row = loop[3]
+
+	
+#Starts Validation
 	#If white
 	if (world.board[from_col][from_row] == 'w') and (user == 'w'): 
 		if(to_row = from_row -1): #If going one space foward  - covers non-attack moves
