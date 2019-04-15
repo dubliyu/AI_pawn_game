@@ -2,8 +2,8 @@
 # This file contains functions for input/output
 
 def print_world(world):
-	print("   A  B  C  ")
-	print(" +-----------+")
+	print("\n   A  B  C  ")
+	print(" +---------+")
 	index = 1
 	row_s = ""
 	for row in world.board:
@@ -16,15 +16,23 @@ def print_world(world):
 
 			# Add spacing
 			row_s += " | "
-		row_s = row_s[:-1]
+			row_s = row_s[:-1]
+
+		# print row
 		print(row_s)
 		index += 1
-	print(" +-----------+")
+		print(" +---------+\n")
 
-def print_info():
-	print("Hello, when the game is shown on the console please be aware that")
-	print("* is a black pawn")
-	print("O is a white pawn\n\n")
+def print_info(player):
+	print("Hello, when the game is shown on the console please be aware that\n")
+	b_comment = ""
+	w_comment = ""
+	if player == 'b':
+		b_comment = 'This is you!'
+	elif player == 'w':
+		w_comment = "This is you!"
+	print("* is a black pawn " + b_comment + "\n")
+	print("O is a white pawn " + w_comment + "\n\n")
 
 def get_user():
 	# vars
@@ -54,14 +62,14 @@ def get_user():
 def get_move(world, tracker, user):
 	# vars
 	move = []
-	valid = False
+	valid = 0
 
 	while(valid != 1):
 		print("Please enter a move as Column-Row to Column-Row\n ex) A3 B4 or world to print the world again")
 		choice = input(">").lower()
 		if choice == 'world':
 			print_world()
-		elif len(choice.strip()) == 4:
+		elif len(choice.strip()) == 5:
 			l = choice.split()
 			if len(l) != 2:
 				print("Invalid input")
@@ -78,19 +86,26 @@ def get_move(world, tracker, user):
 
 				# Check for validity
 				if from_col in valid_col and to_col in valid_col and to_row in valid_row and from_row in valid_row:
+					# Translate
+					try:
+						from_col = valid_col.index(from_col)
+						to_col = valid_col.index(to_col)
+						from_row = valid_row.index(from_row)
+						to_row = valid_row.index(to_row)
+					except:
+						print("That move is not valid.")
+						continue
+					
 					#Validates the input
-					valid = console.validate_move(world, from_col, from_row, to_col, to_row, user)
-					############################## do i need to put console there in same file??? ###########################################
+					valid = validate_move(world, from_col, from_row, to_col, to_row, user)
 
 					if valid == -1: #They tried to move other team
 						print("You can't move a pawn you don't control. Try Again.")
-					else if valid == 0: #Not valid
+					elif valid == 0: #Not valid
 						print("That move is not valid.")
 						continue
-					else if valid == 1: #Valid!!!
-						return [from_col, from_row, to_col, to_row]
-
-
+					elif valid == 1: #Valid!!!
+						return [from_row, from_col, to_row, to_col]
 				else:
 					print("Invalid input")
 		else:
@@ -99,43 +114,34 @@ def get_move(world, tracker, user):
 	# This should never happen
 	return [0,0,0,0]
 
+def print_tie():
+	print("A deadlock has been reached\nNo Winner, Tie\n")
+
+def print_victory(player, isUser):
+	if player == 'b': player = "Black"
+	if player == 'w': player = "White"
+	if isUser:
+		comment = "the User"
+	else:
+		comment = "the Computer"
+	print("!!!A Winner has been reached!!!\nWinner is " + player + ", " + comment)
+
 #Validates a user input
 def validate_move(world, from_col, from_row, to_col, to_row, user):
-#Converting the row / col to grid numbers
-
-	loop = [from_col, from_row, to_col, to_row]
-
-	for i in range (0, len(loop)):
-		if loop[i] == 'a':
-			loop[i] = 0
-		else if loop[i] == 'b':
-			loop[i] = 1
-		else if loop[i] == 'c':
-			loop[i] == 2
-		else if loop[i].isnumeric():
-			loop[i] == loop[i] - 1
-		else:
-	
-	from_col = loop[0]
-	from_row = loop[1]
-	to_col = loop[2]
-	to_row = loop[3]
-
-	
-#Starts Validation
+	#Starts Validation
 	#If white
-	if (world.board[from_col][from_row] == 'w') and (user == 'w'): 
-		if(to_row = from_row -1): #If going one space foward  - covers non-attack moves
+	if (world.board[from_row][from_col]== 'w') and (user == 'w'): 
+		if(to_row == from_row -1): #If going one space foward  - covers non-attack moves
 
 			if (to_col == from_col + 1) or (to_col == from_col -1): #Diagonal
 
-				if world.board[to_col][to_row] == 'b': #Can attack opponent
+				if world.board[to_row][to_col] == 'b': #Can attack opponent
 					return 1
 				else:
 					return 0
 
-			else if (to_col == from_col):
-				if world.board[to_col][to_row] != 'e':
+			elif (to_col == from_col):
+				if world.board[to_row][to_col] == 'e':
 					return 1
 				else:
 					return 0
@@ -147,22 +153,22 @@ def validate_move(world, from_col, from_row, to_col, to_row, user):
 			return 0
 
 	#IF they are black but trying to control white
-	else if (world.board[from_col][from_row] == 'w') and (user == 'b'):
+	elif (world.board[to_row][to_col] == 'w') and (user == 'b'):
 		return -1
 
 	#If black
-	else if world.board[from_col][from_row] == 'b':
-		if(to_row = from_row +1): #If going one space foward  - covers non-attack moves
+	elif world.board[to_row][to_col] == 'b':
+		if(to_row == from_row +1): #If going one space foward  - covers non-attack moves
 
 			if (to_col == from_col + 1) or (to_col == from_col -1): #Diagonal
 
-				if world.board[to_col][to_row] == 'w': #Can attack opponent
+				if world.board[to_row][to_col] == 'w': #Can attack opponent
 					return 1
 				else:
 					return 0
 
-			else if (to_col == from_col):
-				if world.board[to_col][to_row] != 'e':
+			elif (to_col == from_col):
+				if world.board[to_row][to_col] == 'e':
 					return 1
 				else:
 					return 0
@@ -174,7 +180,7 @@ def validate_move(world, from_col, from_row, to_col, to_row, user):
 			return 0
 
 	#IF they are white but trying to control black
-	else if (world.board[from_col][from_row] == 'b') and (user == 'w'):
+	elif (world.board[to_row][to_col] == 'b') and (user == 'w'):
 		return -1
 
 	#If they try moving something not there

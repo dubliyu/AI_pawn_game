@@ -10,13 +10,14 @@ import console
 # Declare global variables
 computer, user, turn = console.get_user()
 tracker = stats.tracker(computer, user)
+stop_loop = False
 
 # Init the world
 game_world = world.game_world()
-console.print_info()
+console.print_info(user)
 
 # Start the game loop
-while(True):
+while(stop_loop == False):
 	# Show the world
 	console.print_world(game_world)
 
@@ -29,17 +30,19 @@ while(True):
 		turn = computer
 
 	# Update the world
-	print(move)
 	game_world.update_world(move)
 
 	# Check for victory
 	victory = algo.check_victory(game_world, tracker)
 	if victory == computer:
-		console.print_victory(computer)
+		console.print_victory(computer, False)
+		stop_loop = True
 	elif victory == user:
-		console.print_victory(user)
+		console.print_victory(user, True)
+		stop_loop = True
 	elif victory == algo.GAME_TIE:
 		console.print_tie()
+		stop_loop = True
 
 # Print game Stats
 tracker.print_stats()

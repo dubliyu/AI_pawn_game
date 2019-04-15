@@ -30,7 +30,7 @@ def generate_move(world, player, tracker):
 
 		# Run minimax on new world
 		worth_of_move = minimax(new_world, 0, player, False, tracker)
-		print("Found worth: " +  str(worth_of_move))
+
 		# Evaluate results
 		if worth_of_move > best_move_worth:
 			best_move = move 
@@ -65,7 +65,7 @@ def move_forward(world, i, j, player):
 	# Check if a piece can move one space forward
 	# black
 	if player == GAME_BLACK:
-		if i + 1 > 4 or world[i +1 ][j] != GAME_EMPTY:
+		if i + 1 > 4 or world[i + 1 ][j] != GAME_EMPTY:
 			return False
 		else:
 			return [i, j, i+1, j]
@@ -90,7 +90,7 @@ def attack_forward(world, i, j, player):
 
 		# Check two cases
 		# left
-		if 0 > j - 1 and world[i - 1][j - 1] == GAME_BLACK:
+		if 0 <= j - 1 and world[i - 1][j - 1] == GAME_BLACK:
 			return [i, j, i-1, j-1]
 		# Right
 		if 2 > j + 1 and world[i - 1][j + 1] == GAME_BLACK:
@@ -103,7 +103,7 @@ def attack_forward(world, i, j, player):
 
 		# Check two cases
 		# left
-		if 0 > j - 1 and world[i + 1][j - 1] == GAME_WHITE:
+		if 0 <= j - 1 and world[i + 1][j - 1] == GAME_WHITE:
 			return [i, j, i+1, j-1]
 		# Right
 		if 2 > j + 1 and world[i + 1][j + 1] == GAME_WHITE:
