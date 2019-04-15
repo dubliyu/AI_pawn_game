@@ -16,7 +16,7 @@ The computer is controlled through a MiniMax algorithm. The AI will generally wi
 ## Playing
 ##### To run the game
 ```python
-	python game.py
+python game.py
 ```
 
 ##### Choose player
