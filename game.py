@@ -23,6 +23,7 @@ while(stop_loop == False):
 
 	# Get the next move
 	if turn == computer:
+		console.generating_moves()
 		move = algo.generate_move(game_world, computer, tracker)
 		turn = user
 	else:

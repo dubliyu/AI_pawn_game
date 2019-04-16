@@ -12,6 +12,7 @@ class tracker:
 	max_depth = 0
 	depths = []
 	temp_start = 0
+	memoized_size = 0
 
 	def __init__(self, computer, user):
 		self.computer = computer
@@ -32,6 +33,10 @@ class tracker:
 	def add_move(self, m):
 		self.possible_moves.append(m)
 
+	def add_size(self, s):
+		if s > self.memoized_size:
+			self.memoized_size = s
+
 	def print_stats(self):
 		print("-" * 25)
 		print("Game Stats:")
@@ -39,4 +44,5 @@ class tracker:
 		print("Average number of moves generated: " + str(sum(self.possible_moves) / len(self.possible_moves)))
 		print("Average depth reached by minimax: "+ str(sum(self.depths) / len(self.depths)))
 		print("Max depth reached by minimax: " + str(self.max_depth))
+		print("End size of memoizing hash table: " + str(self.memoized_size))
 		print("-" * 25)

@@ -38,7 +38,7 @@ class game_world:
 		x_n = move[2]
 		y_n = move[3]
 		pawn = self.board[x][y]
-		self.board[x][y] = 'w'
+		self.board[x][y] = 'e'
 		self.board[x_n][y_n] = pawn
 
 

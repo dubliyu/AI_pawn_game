@@ -68,7 +68,7 @@ def get_move(world, tracker, user):
 		print("Please enter a move as Column-Row to Column-Row\n ex) A3 B4 or world to print the world again")
 		choice = input(">").lower()
 		if choice == 'world':
-			print_world()
+			print_world(world)
 		elif len(choice.strip()) == 5:
 			l = choice.split()
 			if len(l) != 2:
@@ -153,11 +153,11 @@ def validate_move(world, from_col, from_row, to_col, to_row, user):
 			return 0
 
 	#IF they are black but trying to control white
-	elif (world.board[to_row][to_col] == 'w') and (user == 'b'):
+	elif (world.board[from_row][from_col] == 'w') and (user == 'b'):
 		return -1
 
 	#If black
-	elif world.board[to_row][to_col] == 'b':
+	elif world.board[from_row][from_col] == 'b':
 		if(to_row == from_row +1): #If going one space foward  - covers non-attack moves
 
 			if (to_col == from_col + 1) or (to_col == from_col -1): #Diagonal
@@ -180,11 +180,12 @@ def validate_move(world, from_col, from_row, to_col, to_row, user):
 			return 0
 
 	#IF they are white but trying to control black
-	elif (world.board[to_row][to_col] == 'b') and (user == 'w'):
+	elif (world.board[from_row][from_col] == 'b') and (user == 'w'):
 		return -1
 
 	#If they try moving something not there
 	else: #e so invalid 
 		return 0
 
-
+def generating_moves():
+	print("Computer is generating moves...")

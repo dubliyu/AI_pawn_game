@@ -11,7 +11,7 @@ GAME_WHITE  = 'w'
 GAME_EMPTY = 'e'
 _BASE_WIN = 100
 _BASE_LOSS = -100
-
+memo_table = {}
 
 def generate_move(world, player, tracker):
 	# Runs minimax and returns optimal move for algo
@@ -33,10 +33,14 @@ def generate_move(world, player, tracker):
 
 		# Evaluate results
 		if worth_of_move > best_move_worth:
+			best_move_worth = worth_of_move
 			best_move = move 
 
 	# Stop tracking time
 	tracker.stop_time()
+
+	# Check the memoized size
+	tracker.add_size(len(memo_table))
 
 	# Return best move
 	return best_move
@@ -93,7 +97,7 @@ def attack_forward(world, i, j, player):
 		if 0 <= j - 1 and world[i - 1][j - 1] == GAME_BLACK:
 			return [i, j, i-1, j-1]
 		# Right
-		if 2 > j + 1 and world[i - 1][j + 1] == GAME_BLACK:
+		if 2 >= j + 1 and world[i - 1][j + 1] == GAME_BLACK:
 			return [i, j, i-1, j+1]
 
 	if player == GAME_BLACK:
@@ -106,7 +110,7 @@ def attack_forward(world, i, j, player):
 		if 0 <= j - 1 and world[i + 1][j - 1] == GAME_WHITE:
 			return [i, j, i+1, j-1]
 		# Right
-		if 2 > j + 1 and world[i + 1][j + 1] == GAME_WHITE:
+		if 2 >= j + 1 and world[i + 1][j + 1] == GAME_WHITE:
 			return [i, j, i+1, j+1]			
 
 	# Something happened
@@ -117,29 +121,29 @@ def minimax(world, depth, player, isMaxPlayer, tracker):
 	# Note depth
 	tracker.check_depth(depth)
 
+	# Memoized check
+	memo_world = ""
+	for i in range(5):
+		memo_world += ''.join(world.board[i])
+	if isMaxPlayer: memo_world += "T"
+	val = memo_table.get(memo_world)
+	if val != None:
+		return val
+
+
 	# Evaluate world for victory
-	worth = evaluator_func(world, player, tracker)
+	worth, our_moves, opp_moves = evaluator_func(world, player, tracker)
 
 	# Switch on worth
 	if worth == GAME_TIE:
+		memo_table[memo_world] = 0
 		return 0
 	elif worth == _BASE_WIN or worth == _BASE_LOSS:
-		if isMaxPlayer:
-			return worth - depth
-		else:
-			return worth + depth
-
-	# Get opponent
-	if player == GAME_WHITE:
-		opponent = GAME_BLACK
-	else:
-		opponent = GAME_WHITE
+		memo_table[memo_world] = worth
+		return worth
 
 	# No victory run minimax again
 	if isMaxPlayer:
-		# Get our moves
-		our_moves = get_possible_moves(world, player, tracker)
-
 		# Call minimax for each move
 		best_move_worth = -math.inf
 		for move in our_moves:
@@ -148,18 +152,16 @@ def minimax(world, depth, player, isMaxPlayer, tracker):
 			new_world.set_world(world, move)
 
 			# Run minimax on new world
-			worth_of_move = minimax(new_world, depth + 1, opponent, not isMaxPlayer, tracker)
+			worth_of_move = minimax(new_world, depth + 1, player, not isMaxPlayer, tracker)
 
 			# Evaluate results
 			if worth_of_move > best_move_worth:
 				best_move_worth = worth_of_move 
 
 		# Return the best worth
+		memo_table[memo_world] = best_move_worth
 		return best_move_worth
 	else:
-		# Get opponent moves
-		opp_moves = get_possible_moves(world, opponent, tracker)
-
 		# Call minimax for each move
 		best_move_worth = math.inf
 		for move in opp_moves:
@@ -168,13 +170,14 @@ def minimax(world, depth, player, isMaxPlayer, tracker):
 			new_world.set_world(world, move)
 
 			# Run minimax on new world
-			worth_of_move = minimax(new_world, depth + 1, opponent, not isMaxPlayer, tracker)
+			worth_of_move = minimax(new_world, depth + 1, player, not isMaxPlayer, tracker)
 
 			# Evaluate results
 			if worth_of_move < best_move_worth:
 				best_move_worth = worth_of_move 
 
 		# Return the best worth
+		memo_table[memo_world] = best_move_worth
 		return best_move_worth
 
 def evaluator_func(world, player, tracker):
@@ -182,30 +185,48 @@ def evaluator_func(world, player, tracker):
 	s_row = world.board[0]
 	t_row = world.board[4]
 
+	# Check that any remaining enemy pawns exist
+	player_exists = False
+	for i in range(5):
+		for j in range(3):
+			if world.board[i][j] == player:
+				player_exists = True
+	if not player_exists:
+		return _BASE_LOSS, -1, -1
+
 	# Check white
 	if player == GAME_WHITE:
 		if s_row[0] == GAME_WHITE or s_row[1] == GAME_WHITE or s_row[2] == GAME_WHITE:
-			return _BASE_WIN
+			return _BASE_WIN, -1, -1
 		if t_row[0] == GAME_BLACK or t_row[1] == GAME_BLACK or t_row[2] == GAME_BLACK:
-			return _BASE_LOSS
+			return _BASE_LOSS, -1, -1
 
 	# Check black
 	else:
 		if s_row[0] == GAME_WHITE or s_row[1] == GAME_WHITE or s_row[2] == GAME_WHITE:
-			return _BASE_LOSS
+			return _BASE_LOSS, -1, -1
 		if t_row[0] == GAME_BLACK or t_row[1] == GAME_BLACK or t_row[2] == GAME_BLACK:
-			return _BASE_WIN
+			return _BASE_WIN, -1, -1
 
 	# Check if deadlock has happened
-	moves = get_possible_moves(world, player, tracker)
-	if len(moves) == 0:
-		return GAME_TIE
+	if player == GAME_BLACK:
+		opponent = GAME_WHITE
 	else:
-		return 0
+		opponent = GAME_BLACK
+	opp_moves =	get_possible_moves(world, opponent, tracker)	
+	moves = get_possible_moves(world, player, tracker)
+	if len(moves) == 0 and len(opp_moves) == 0:
+		return GAME_TIE, -1, -1
+	elif len(moves) == 0 and len(opp_moves) != 0:
+		return _BASE_LOSS, -1, -1
+	elif len(moves) != 0 and len(opp_moves) == 0:
+		return _BASE_WIN, -1, -1
+	else:
+		return 0, moves, opp_moves
 
 def check_victory(world, tracker):
 	# Run the world through the evaluator function
-	worth = evaluator_func(world, GAME_WHITE, tracker)
+	worth, empty1, empty2 = evaluator_func(world, GAME_WHITE, tracker)
 	if worth == _BASE_WIN:
 		return GAME_WHITE
 	elif worth == _BASE_LOSS:
