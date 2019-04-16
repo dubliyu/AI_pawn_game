@@ -14,6 +14,10 @@ The computer is controlled through a MiniMax algorithm. The AI will generally wi
 ***
 
 ## Playing
+##### Prerequisite
+Tested to work with python 3.7.6
+Will not work in Python 2 
+
 ##### To run the game
 ```python
 python game.py
